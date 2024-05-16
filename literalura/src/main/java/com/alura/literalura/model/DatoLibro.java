@@ -7,9 +7,10 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DatoLibro(
+        @JsonAlias("id")Long isbn, //simulo dato de isbn para tratar ejemplares unicos
         @JsonAlias("title")String titulo,
-        @JsonAlias("authors") List<DatoAutor> autores,
-        @JsonAlias("languages")List<String> idiomas,
-        @JsonAlias("download_count")Long descargas
+        @JsonAlias("authors") List<DatoAutor> listaAutores,
+        @JsonAlias("languages")List<String> listaIdiomas,
+        @JsonAlias("download_count")Long cantidadDescargas
 ) {
 }
