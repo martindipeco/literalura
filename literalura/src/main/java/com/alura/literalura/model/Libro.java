@@ -28,6 +28,54 @@ public class Libro {
     {
         this.isbn = datoLibro.isbn();
         this.titulo = datoLibro.titulo();
-        //this.listaAutores = datoLibro.listaAutores();
+        //this.listaAutores queda sin iniciar desde datoLibro
+        this.listaIdiomas = datoLibro.listaIdiomas();
+        this.cantidadDescargas = datoLibro.cantidadDescargas();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getIsbn() {
+        return isbn;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public List<Autor> getListaAutores() {
+        return listaAutores;
+    }
+
+    public List<String> getListaIdiomas() {
+        return listaIdiomas;
+    }
+
+    public Long getCantidadDescargas() {
+        return cantidadDescargas;
+    }
+
+    public void setListaAutores(List<Autor> listaAutores) {
+        //el método addLibro debe añadir un elemento a la lista
+        listaAutores.forEach(autor -> autor.addLibro(this)); //debo setear en ambas entidades para conectar
+        this.listaAutores = listaAutores;
+    }
+
+    public void addAutor(Autor autor)
+    {
+        this.listaAutores.add(autor);
+    }
+
+    @Override
+    public String toString() {
+        return "Libro{" +
+                "ISBN=" + isbn +
+                ", Título='" + titulo + '\'' +
+                ", Autor(es)=" + listaAutores +
+                ", Idioma(s)=" + listaIdiomas +
+                ", Total Descargas=" + cantidadDescargas +
+                '}';
     }
 }
