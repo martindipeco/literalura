@@ -1,12 +1,16 @@
 package com.alura.literalura.principal;
 
 import com.alura.literalura.model.Dato;
+import com.alura.literalura.model.Libro;
 import com.alura.literalura.repository.IRepository;
 import com.alura.literalura.service.ConsumoAPI;
 import com.alura.literalura.service.ConvierteDatos;
 import com.alura.literalura.service.LibroService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
 
@@ -40,7 +44,10 @@ public class Principal {
                 case 1:
                     System.out.println("\nIngrese su búsqueda");
                     var busqueda = scanner.nextLine();
-                    libroServicio.buscarLibroPorTitulo(busqueda);
+                    //primero realizo la busqueda, y la lista que obtengo la hago pasar x stream p salvar al repo
+                    libroServicio.buscarLibroPorTitulo(busqueda).stream()
+                            .peek(System.out::println)
+                            .forEach(repository::save);
                     break;
                 case 2:
                     //buscarEpisodioPorSerie();

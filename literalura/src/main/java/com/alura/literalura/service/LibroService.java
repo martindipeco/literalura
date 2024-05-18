@@ -1,6 +1,7 @@
 package com.alura.literalura.service;
 
 import com.alura.literalura.model.Dato;
+import com.alura.literalura.model.DatoLibro;
 import com.alura.literalura.model.Libro;
 import com.alura.literalura.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +20,21 @@ public class LibroService {
     @Autowired
     private IRepository repository;
 
-    public void buscarLibroPorTitulo(String busqueda)
+    public List<Libro> buscarLibroPorTitulo(String busqueda)
     {
         String direccion = URL_BASE + busqueda.replace(" ", "%20");
         var json = consumoAPI.obtenerDatos(direccion);
         System.out.println(json); //viene como String
         var datos = conversor.obtenerDatos(json, Dato.class);
         System.out.println(datos); //datos es una lista de DatoLibro
-        //TODO convertir a Optional?
+
         List<Libro> resultadoBusqueda = new ArrayList<>();
         resultadoBusqueda = datos.listaDeLibros().stream()
                 .map(l -> new Libro(l))
                 .collect(Collectors.toList());
         //por cada integrante de la lista, instancio un Libro ¿con su respectivo Autor?
-        //para poblar la base de datos
-        for(Libro itemLibro : resultadoBusqueda)
-        {
-            System.out.println(itemLibro);
-            repository.save(itemLibro);
-        }
+        return resultadoBusqueda;
+        //TODO convertir a Optional?
+
     }
 }
