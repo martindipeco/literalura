@@ -12,22 +12,19 @@ public class Principal {
 
     private Scanner scanner = new Scanner(System.in);
     private IRepository repository;
-    private LibroService libroService;
-
-    private final String URL_BASE = "https://gutendex.com/books/?search=";
-    private ConsumoAPI consumoAPI = new ConsumoAPI();
-    private ConvierteDatos conversor = new ConvierteDatos();
+    private LibroService libroServicio = new LibroService();
 
     public Principal(IRepository repositorio) {
         this.repository = repositorio;
     }
 
     public void muestraElMenu() {
-        System.out.println("\nBienvenidos a Liter-Alura\n");
+        System.out.println("\nBienvenidos a Liter-Alura");
         var opcion = -1;
         while (opcion != 0) {
             var menu = """
-                    1 - Buscar libro por título
+                    
+                    1 - Buscar libro por título y/o autor
                     2 - Listar libros registrados
                     3 - Listar autores registrados
                     4 - Listar autores vivos en un determinado año
@@ -43,7 +40,7 @@ public class Principal {
                 case 1:
                     System.out.println("\nIngrese su búsqueda");
                     var busqueda = scanner.nextLine();
-                    buscarLibroPorTitulo(busqueda);
+                    libroServicio.buscarLibroPorTitulo(busqueda);
                     break;
                 case 2:
                     //buscarEpisodioPorSerie();
@@ -67,12 +64,4 @@ public class Principal {
 
     }
 
-    public void buscarLibroPorTitulo(String busqueda)
-    {
-        String direccion = URL_BASE + busqueda.replace(" ", "%20");
-        var json = consumoAPI.obtenerDatos(direccion);
-        System.out.println(json);
-        var datos = conversor.obtenerDatos(json, Dato.class);
-        System.out.println(datos);
-    }
 }
