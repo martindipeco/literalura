@@ -16,7 +16,7 @@ public class Libro {
 
     private String titulo;
 
-    @ManyToMany(mappedBy = "listaLibros", cascade = CascadeType.ALL, fetch = FetchType.EAGER) //listaLibros es el atributo en Autor
+    @ManyToMany(mappedBy = "listaLibros", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER) //listaLibros es el atributo en Autor
     private List<Autor> listaAutores;
 
     private List<String> listaIdiomas;
