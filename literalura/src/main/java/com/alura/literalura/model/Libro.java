@@ -2,6 +2,7 @@ package com.alura.literalura.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Libro {
     {
         this.isbn = datoLibro.isbn();
         this.titulo = datoLibro.titulo();
-        //this.listaAutores queda sin iniciar desde datoLibro
+        this.listaAutores = new ArrayList<>(); //la voy poblando luego - sin datos desde datoLibro
         this.listaIdiomas = datoLibro.listaIdiomas();
         this.cantidadDescargas = datoLibro.cantidadDescargas();
     }
@@ -66,6 +67,7 @@ public class Libro {
     public void addAutor(Autor autor)
     {
         this.listaAutores.add(autor);
+        autor.getListaLibros().add(this);
     }
 
     @Override

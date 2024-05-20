@@ -1,8 +1,6 @@
 package com.alura.literalura.service;
 
-import com.alura.literalura.model.Dato;
-import com.alura.literalura.model.DatoLibro;
-import com.alura.literalura.model.Libro;
+import com.alura.literalura.model.*;
 import com.alura.literalura.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,26 +13,44 @@ import java.util.stream.Collectors;
 public class LibroService {
 
     private final String URL_BASE = "https://gutendex.com/books/?search=";
+
+    private final String URL_BASE_ID = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     @Autowired
     private IRepository repository;
 
-    public List<Libro> buscarLibroPorTitulo(String busqueda)
+    public List<DatoLibro> buscarLibroPorTitulo(String busqueda)
     {
         String direccion = URL_BASE + busqueda.replace(" ", "%20");
         var json = consumoAPI.obtenerDatos(direccion);
         System.out.println(json); //viene como String
         var datos = conversor.obtenerDatos(json, Dato.class);
-        System.out.println(datos); //datos es una lista de DatoLibro
+        System.out.println(datos); //datos contiene como único atributo una lista de DatoLibro
+        return datos.listaDeLibros();
 
-        List<Libro> resultadoBusqueda = new ArrayList<>();
-        resultadoBusqueda = datos.listaDeLibros().stream()
-                .map(l -> new Libro(l))
-                .collect(Collectors.toList());
+//        List<Libro> resultadoBusqueda = new ArrayList<>();
+//        resultadoBusqueda = datos.listaDeLibros().stream()
+//                .map(dl -> new Libro(dl))
+//                .collect(Collectors.toList());
+
         //por cada integrante de la lista, instancio un Libro ¿con su respectivo Autor?
-        return resultadoBusqueda;
+
         //TODO convertir a Optional?
 
+    }
+
+    public List<Autor> buscaAutoresDeLibroPorIsbn(Long isbn){
+        String direccion = URL_BASE_ID + isbn;
+        var json = consumoAPI.obtenerDatos(direccion);
+        var datos = conversor.obtenerDatos(json, Dato.class);
+        List<Autor> autores = new ArrayList<>();
+        for (DatoLibro datoLibro : datos.listaDeLibros())
+        {
+            autores = datoLibro.listaAutores().stream()
+                    .map(la -> new Autor(la))
+                    .collect(Collectors.toList());
+        }
+        return autores;
     }
 }

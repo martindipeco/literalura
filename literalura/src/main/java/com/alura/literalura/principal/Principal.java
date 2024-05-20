@@ -1,7 +1,6 @@
 package com.alura.literalura.principal;
 
-import com.alura.literalura.model.Dato;
-import com.alura.literalura.model.Libro;
+import com.alura.literalura.model.*;
 import com.alura.literalura.repository.IRepository;
 import com.alura.literalura.service.ConsumoAPI;
 import com.alura.literalura.service.ConvierteDatos;
@@ -44,10 +43,34 @@ public class Principal {
                 case 1:
                     System.out.println("\nIngrese su búsqueda");
                     var busqueda = scanner.nextLine();
-                    //primero realizo la busqueda, y la lista que obtengo la hago pasar x stream p salvar al repo
-                    libroServicio.buscarLibroPorTitulo(busqueda).stream()
-                            .peek(System.out::println)
-                            .forEach(repository::save);
+                    var listaDeDatoLibro = libroServicio.buscarLibroPorTitulo(busqueda);
+
+                    for(DatoLibro dl : listaDeDatoLibro)
+                    {
+                        Libro nuevoLibro = new Libro(dl);
+                        for(DatoAutor da : dl.listaAutores())
+                        {
+                            Autor nuevoAutor = new Autor(da);
+                            nuevoAutor.addLibro(nuevoLibro);
+                        }
+                        repository.save(nuevoLibro);
+                    }
+
+                    //TODO: manejar el caso de autores repetidos, o libros repetidos!!
+
+                    //podria ser algo así
+
+//                    public Autor saveOrUpdateAutor(DatoAutor datoAutor) {
+//                        Optional<Autor> existingAutor = autorRepository.findByApellidoNombre(datoAutor.apellidoNombre());
+//                        if (existingAutor.isPresent()) {
+//                            return existingAutor.get();
+//                        } else {
+//                            Autor autor = new Autor(datoAutor);
+//                            return autorRepository.save(autor);
+//                        }
+//                    }
+
+
                     break;
                 case 2:
                     //buscarEpisodioPorSerie();

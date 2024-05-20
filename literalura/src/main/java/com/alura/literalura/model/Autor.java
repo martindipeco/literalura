@@ -2,6 +2,7 @@ package com.alura.literalura.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,13 +13,13 @@ public class Autor {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //para que sea autoincremental
     private Long id;
 
-    @Column(unique = true)
+    // antes tenia @Column(unique = true), pero puede darse el caso de distintos autores con el mismo nombre! Lamentablemente gutendex no tiene "id" de autor. Habrá que hacer la comparación full de nacimiento y muerte
     private String apellidoNombre;
 
     private Integer fechaNac;
     private Integer fechaMuerte;
 
-    @ManyToMany
+    @ManyToMany //(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Libro> listaLibros;
 
     public Autor(){}
@@ -43,6 +44,7 @@ public class Autor {
             System.out.println("Sin datos para fecha de fallecimiento");
             this.fechaMuerte = null;
         }
+        this.listaLibros = new ArrayList<>(); //solo inicializo, la lleno más adelante
     }
 
     public Long getId() {
@@ -73,5 +75,7 @@ public class Autor {
     public void addLibro(Libro libro)
     {
         this.listaLibros.add(libro);
+        libro.getListaAutores().add(this);
     }
+
 }
