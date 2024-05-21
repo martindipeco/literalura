@@ -19,7 +19,7 @@ public class Autor {
     private Integer fechaNac;
     private Integer fechaMuerte;
 
-    @ManyToMany //(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany (cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Libro> listaLibros;
 
     public Autor(){}

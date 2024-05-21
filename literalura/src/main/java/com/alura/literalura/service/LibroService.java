@@ -20,6 +20,7 @@ public class LibroService {
     @Autowired
     private IRepository repository;
 
+
     public List<DatoLibro> buscarLibroPorTitulo(String busqueda)
     {
         String direccion = URL_BASE + busqueda.replace(" ", "%20");

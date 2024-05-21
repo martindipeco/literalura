@@ -1,6 +1,7 @@
 package com.alura.literalura.principal;
 
 import com.alura.literalura.model.*;
+import com.alura.literalura.repository.IAutorRepository;
 import com.alura.literalura.repository.IRepository;
 import com.alura.literalura.service.ConsumoAPI;
 import com.alura.literalura.service.ConvierteDatos;
@@ -8,6 +9,7 @@ import com.alura.literalura.service.LibroService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -15,10 +17,13 @@ public class Principal {
 
     private Scanner scanner = new Scanner(System.in);
     private IRepository repository;
+    private IAutorRepository autorRepository;
     private LibroService libroServicio = new LibroService();
 
-    public Principal(IRepository repositorio) {
+    public Principal(IRepository repositorio, IAutorRepository autorRepositorio) {
+
         this.repository = repositorio;
+        this.autorRepository = autorRepositorio;
     }
 
     public void muestraElMenu() {
@@ -47,11 +52,37 @@ public class Principal {
 
                     for(DatoLibro dl : listaDeDatoLibro)
                     {
-                        Libro nuevoLibro = new Libro(dl);
+                        Libro nuevoLibro;
+                        Optional<Libro> libroExistente = repository.findByIsbn(dl.isbn());
+                        if(libroExistente.isPresent())
+                        {
+                            System.out.println("Ese libro ya existe en la base de datos");
+                            continue;
+                        }
+                        else
+                        {
+                            nuevoLibro = new Libro(dl);
+                        }
                         for(DatoAutor da : dl.listaAutores())
                         {
-                            Autor nuevoAutor = new Autor(da);
-                            nuevoAutor.addLibro(nuevoLibro);
+                            Autor nuevoAutor;
+                            Optional<Autor> autorExistente = autorRepository.findByApellidoNombreAndFechaNacAndFechaMuerte(
+                                    da.apellidoNombre(), Integer.valueOf(da.fechaNac()), Integer.valueOf(da.fechaMuerte())
+                            );
+                            if(autorExistente.isPresent())
+                            {
+                                System.out.println("Ese autor ya existe en la base de datos\n");
+                                nuevoAutor = autorExistente.get();
+                                nuevoAutor.getListaLibros().add(nuevoLibro); //nueva linea
+                                //se rompe si intento persistir con nuevoAutor.addLibro(nuevoLibro);
+                                //Ver como maneja inserciones ScreenMatch
+                            }
+                            else
+                            {
+                                nuevoAutor = new Autor(da);
+                                nuevoAutor.addLibro(nuevoLibro);
+                            }
+
                         }
                         repository.save(nuevoLibro);
                     }

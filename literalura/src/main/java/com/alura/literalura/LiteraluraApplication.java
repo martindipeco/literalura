@@ -1,6 +1,7 @@
 package com.alura.literalura;
 
 import com.alura.literalura.principal.Principal;
+import com.alura.literalura.repository.IAutorRepository;
 import com.alura.literalura.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,13 +14,16 @@ public class LiteraluraApplication implements CommandLineRunner {
 	@Autowired
 	private IRepository repository;
 
+	@Autowired
+	private IAutorRepository autorRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(LiteraluraApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		Principal principal = new Principal(repository);
+		Principal principal = new Principal(repository, autorRepository);
 		principal.muestraElMenu();
 	}
 }
