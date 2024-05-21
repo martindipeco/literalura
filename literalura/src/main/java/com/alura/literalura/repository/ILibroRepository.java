@@ -3,7 +3,9 @@ package com.alura.literalura.repository;
 import com.alura.literalura.model.Libro;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IRepository extends JpaRepository<Libro, Long> {
+import java.util.Optional;
 
-    //Queries a la base de datos
+public interface ILibroRepository extends JpaRepository<Libro, Long> {
+
+    Optional<Libro> findByIsbn(Long isbn);
 }

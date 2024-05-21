@@ -1,33 +1,40 @@
 package com.alura.literalura.principal;
 
 import com.alura.literalura.model.*;
-import com.alura.literalura.repository.IRepository;
-import com.alura.literalura.service.ConsumoAPI;
-import com.alura.literalura.service.ConvierteDatos;
+import com.alura.literalura.repository.IAutorRepository;
+import com.alura.literalura.repository.ILibroRepository;
 import com.alura.literalura.service.LibroService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Principal {
 
     private Scanner scanner = new Scanner(System.in);
-    private IRepository repository;
+    private ILibroRepository libroRepository;
+    private IAutorRepository autorRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
     private LibroService libroServicio = new LibroService();
 
-    public Principal(IRepository repositorio) {
-        this.repository = repositorio;
+    public Principal(ILibroRepository libroRepositorio, IAutorRepository autorRepository, EntityManager entityManager) {
+
+        this.libroRepository = libroRepositorio;
+        this.autorRepository = autorRepository;
+        this.entityManager = entityManager;
     }
 
+    @Transactional
     public void muestraElMenu() {
         System.out.println("\nBienvenidos a Liter-Alura");
         var opcion = -1;
         while (opcion != 0) {
             var menu = """
                     
-                    1 - Buscar libro por título y/o autor
+                    1 - Buscar libro por título y/o autor (y agregarlo a la base de datos propia)
                     2 - Listar libros registrados
                     3 - Listar autores registrados
                     4 - Listar autores vivos en un determinado año
@@ -47,29 +54,39 @@ public class Principal {
 
                     for(DatoLibro dl : listaDeDatoLibro)
                     {
-                        Libro nuevoLibro = new Libro(dl);
+                        Libro nuevoLibro;
+                        Optional<Libro> libroExistente = libroRepository.findByIsbn(Long.valueOf(dl.isbn()));
+                        if(libroExistente.isPresent())
+                        {
+                            //nuevoLibro = libroExistente.get();
+                            System.out.println("Ya existe ese libro en la base de datos propia");
+                            break;
+                        }
+                        else
+                        {
+                            nuevoLibro = new Libro(dl);
+                        }
+
                         for(DatoAutor da : dl.listaAutores())
                         {
-                            Autor nuevoAutor = new Autor(da);
+                            Autor nuevoAutor;
+                            Optional<Autor> autorExistente = autorRepository.findByApellidoNombreAndFechaNacAndFechaMuerte(
+                                    da.apellidoNombre(), Integer.valueOf(da.fechaNac()), Integer.valueOf(da.fechaMuerte()));
+                            if(autorExistente.isPresent())
+                            {
+                                nuevoAutor = autorExistente.get();
+                                nuevoAutor = entityManager.merge(nuevoAutor);
+                            }
+                            else
+                            {
+                                nuevoAutor = new Autor(da);
+                            }
                             nuevoAutor.addLibro(nuevoLibro);
                         }
-                        repository.save(nuevoLibro);
+                        libroRepository.save(nuevoLibro);
                     }
 
                     //TODO: manejar el caso de autores repetidos, o libros repetidos!!
-
-                    //podria ser algo así
-
-//                    public Autor saveOrUpdateAutor(DatoAutor datoAutor) {
-//                        Optional<Autor> existingAutor = autorRepository.findByApellidoNombre(datoAutor.apellidoNombre());
-//                        if (existingAutor.isPresent()) {
-//                            return existingAutor.get();
-//                        } else {
-//                            Autor autor = new Autor(datoAutor);
-//                            return autorRepository.save(autor);
-//                        }
-//                    }
-
 
                     break;
                 case 2:

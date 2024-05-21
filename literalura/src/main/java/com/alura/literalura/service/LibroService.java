@@ -1,7 +1,8 @@
 package com.alura.literalura.service;
 
 import com.alura.literalura.model.*;
-import com.alura.literalura.repository.IRepository;
+import com.alura.literalura.repository.IAutorRepository;
+import com.alura.literalura.repository.ILibroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,7 @@ public class LibroService {
     private final String URL_BASE_ID = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
-    @Autowired
-    private IRepository repository;
+
 
     public List<DatoLibro> buscarLibroPorTitulo(String busqueda)
     {
