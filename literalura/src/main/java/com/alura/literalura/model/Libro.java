@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "libros")
@@ -66,18 +67,20 @@ public class Libro {
 
     public void addAutor(Autor autor)
     {
+        listaAutores.forEach(a -> a.addLibro(this));
         this.listaAutores.add(autor);
-        autor.getListaLibros().add(this);
     }
 
     @Override
     public String toString() {
-        return "Libro{" +
-                "ISBN=" + isbn +
-                ", Título='" + titulo + '\'' +
-                ", Autor(es)=" + listaAutores +
-                ", Idioma(s)=" + listaIdiomas +
-                ", Total Descargas=" + cantidadDescargas +
-                '}';
+        List<String> listaAutoresString = listaAutores.stream()
+                .map(la -> la.toString())
+                .collect(Collectors.toList());
+        return "\nLibro" +
+                "\nISBN: " + isbn +
+                "\nTítulo: " + titulo + '\'' +
+                "\nAutor(es): " + listaAutoresString +
+                "\nIdioma(s): " + listaIdiomas +
+                "\nTotal Descargas: " + cantidadDescargas;
     }
 }

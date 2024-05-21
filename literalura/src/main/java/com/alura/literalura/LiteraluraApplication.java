@@ -2,7 +2,7 @@ package com.alura.literalura;
 
 import com.alura.literalura.principal.Principal;
 import com.alura.literalura.repository.IAutorRepository;
-import com.alura.literalura.repository.IRepository;
+import com.alura.literalura.repository.ILibroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LiteraluraApplication implements CommandLineRunner {
 
 	@Autowired
-	private IRepository repository;
+	private ILibroRepository repository;
 
 	@Autowired
 	private IAutorRepository autorRepository;

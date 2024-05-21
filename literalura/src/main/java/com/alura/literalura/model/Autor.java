@@ -75,7 +75,11 @@ public class Autor {
     public void addLibro(Libro libro)
     {
         this.listaLibros.add(libro);
-        libro.getListaAutores().add(this);
+        //libro.getListaAutores().add(this);
     }
 
+    @Override
+    public String toString() {
+        return apellidoNombre;
+    }
 }

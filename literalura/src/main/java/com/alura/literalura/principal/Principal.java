@@ -2,27 +2,22 @@ package com.alura.literalura.principal;
 
 import com.alura.literalura.model.*;
 import com.alura.literalura.repository.IAutorRepository;
-import com.alura.literalura.repository.IRepository;
-import com.alura.literalura.service.ConsumoAPI;
-import com.alura.literalura.service.ConvierteDatos;
+import com.alura.literalura.repository.ILibroRepository;
 import com.alura.literalura.service.LibroService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Principal {
 
     private Scanner scanner = new Scanner(System.in);
-    private IRepository repository;
+    private ILibroRepository libroRepository;
     private IAutorRepository autorRepository;
     private LibroService libroServicio = new LibroService();
 
-    public Principal(IRepository repositorio, IAutorRepository autorRepositorio) {
+    public Principal(ILibroRepository libroRepositorio, IAutorRepository autorRepositorio) {
 
-        this.repository = repositorio;
+        this.libroRepository = libroRepositorio;
         this.autorRepository = autorRepositorio;
     }
 
@@ -58,7 +53,7 @@ public class Principal {
                     for(DatoLibro dl : listaDeDatoLibro)
                     {
                         Libro nuevoLibro;
-                        Optional<Libro> libroExistente = repository.findByIsbn(dl.isbn());
+                        Optional<Libro> libroExistente = libroRepository.findByIsbn(dl.isbn());
                         if(libroExistente.isPresent())
                         {
                             System.out.println("Ese libro ya existe en la base de datos");
@@ -80,10 +75,11 @@ public class Principal {
                                 );
                                 if(autorExistente.isPresent())
                                 {
+                                    //TODO: manejar el caso de autores repetidos!!
                                     System.out.println("Ese autor ya existe en la base de datos\n");
                                     nuevoAutor = autorExistente.get();
-                                    //nuevoLibro.addAutor(nuevoAutor);
-                                    nuevoAutor.getListaLibros().add(nuevoLibro); //linea anterior ya hace esta accion
+                                    nuevoLibro.addAutor(nuevoAutor);
+                                    //nuevoAutor.getListaLibros().add(nuevoLibro); //linea anterior ya hace esta accion
                                     //se rompe si intento persistir con nuevoAutor.addLibro(nuevoLibro);
                                     //Ver como maneja inserciones ScreenMatch
                                 }
@@ -100,36 +96,20 @@ public class Principal {
                                 System.out.println(e.getMessage());
                             }
                         }
-                        repository.save(nuevoLibro);
+                        libroRepository.save(nuevoLibro);
                     }
-
-                    //TODO: manejar el caso de autores repetidos, o libros repetidos!!
-
-                    //podria ser algo así
-
-//                    public Autor saveOrUpdateAutor(DatoAutor datoAutor) {
-//                        Optional<Autor> existingAutor = autorRepository.findByApellidoNombre(datoAutor.apellidoNombre());
-//                        if (existingAutor.isPresent()) {
-//                            return existingAutor.get();
-//                        } else {
-//                            Autor autor = new Autor(datoAutor);
-//                            return autorRepository.save(autor);
-//                        }
-//                    }
-
-
                     break;
                 case 2:
-                    //buscarEpisodioPorSerie();
+                    libroRepository.findAll().stream().forEach(System.out::println);
                     break;
                 case 3:
-                    //mostrarSeriesBuscadas();
+                    //listarAutoresRegistrados();
                     break;
                 case 4:
-                    //buscarSeriesPorTitulo();
+                    //listarAutoresVivosEnAnho(anho);
                     break;
                 case 5:
-                    //listarTop5();
+                    //listarLibrosPorIdioma(String idioma);
                     break;
                 case 0:
                     System.out.println("Cerrando la aplicación...");

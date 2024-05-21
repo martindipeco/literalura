@@ -1,7 +1,7 @@
 package com.alura.literalura.service;
 
 import com.alura.literalura.model.*;
-import com.alura.literalura.repository.IRepository;
+import com.alura.literalura.repository.ILibroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,6 @@ public class LibroService {
     private final String URL_BASE_ID = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
-    @Autowired
-    private IRepository repository;
-
 
     public List<DatoLibro> buscarLibroPorTitulo(String busqueda)
     {
@@ -29,16 +26,6 @@ public class LibroService {
         var datos = conversor.obtenerDatos(json, Dato.class);
         System.out.println(datos); //datos contiene como único atributo una lista de DatoLibro
         return datos.listaDeLibros();
-
-//        List<Libro> resultadoBusqueda = new ArrayList<>();
-//        resultadoBusqueda = datos.listaDeLibros().stream()
-//                .map(dl -> new Libro(dl))
-//                .collect(Collectors.toList());
-
-        //por cada integrante de la lista, instancio un Libro ¿con su respectivo Autor?
-
-        //TODO convertir a Optional?
-
     }
 
     public List<Autor> buscaAutoresDeLibroPorIsbn(Long isbn){
@@ -54,4 +41,5 @@ public class LibroService {
         }
         return autores;
     }
+
 }
