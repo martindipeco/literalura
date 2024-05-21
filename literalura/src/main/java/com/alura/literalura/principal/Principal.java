@@ -49,6 +49,11 @@ public class Principal {
                     System.out.println("\nIngrese su búsqueda");
                     var busqueda = scanner.nextLine();
                     var listaDeDatoLibro = libroServicio.buscarLibroPorTitulo(busqueda);
+                    if (listaDeDatoLibro.isEmpty())
+                    {
+                        System.out.println("No existen datos con esa búsqueda. Intentelo de nuevo");
+                        break;
+                    }
 
                     for(DatoLibro dl : listaDeDatoLibro)
                     {
@@ -66,23 +71,34 @@ public class Principal {
                         for(DatoAutor da : dl.listaAutores())
                         {
                             Autor nuevoAutor;
-                            Optional<Autor> autorExistente = autorRepository.findByApellidoNombreAndFechaNacAndFechaMuerte(
-                                    da.apellidoNombre(), Integer.valueOf(da.fechaNac()), Integer.valueOf(da.fechaMuerte())
-                            );
-                            if(autorExistente.isPresent())
+                            try
                             {
-                                System.out.println("Ese autor ya existe en la base de datos\n");
-                                nuevoAutor = autorExistente.get();
-                                nuevoAutor.getListaLibros().add(nuevoLibro); //nueva linea
-                                //se rompe si intento persistir con nuevoAutor.addLibro(nuevoLibro);
-                                //Ver como maneja inserciones ScreenMatch
+                                Optional<Autor> autorExistente = autorRepository
+                                        .findByApellidoNombreAndFechaNacAndFechaMuerte(
+                                        da.apellidoNombre(), Integer.valueOf(da.fechaNac())
+                                                , Integer.valueOf(da.fechaMuerte())
+                                );
+                                if(autorExistente.isPresent())
+                                {
+                                    System.out.println("Ese autor ya existe en la base de datos\n");
+                                    nuevoAutor = autorExistente.get();
+                                    //nuevoLibro.addAutor(nuevoAutor);
+                                    nuevoAutor.getListaLibros().add(nuevoLibro); //linea anterior ya hace esta accion
+                                    //se rompe si intento persistir con nuevoAutor.addLibro(nuevoLibro);
+                                    //Ver como maneja inserciones ScreenMatch
+                                }
+                                else
+                                {
+                                    nuevoAutor = new Autor(da);
+                                    nuevoAutor.addLibro(nuevoLibro);
+                                }
                             }
-                            else
+                            catch (NumberFormatException e)
                             {
-                                nuevoAutor = new Autor(da);
-                                nuevoAutor.addLibro(nuevoLibro);
+                                System.out.println("Error de dato numérico en Fechas");
+                                System.out.println("No se pudo guardar autor");
+                                System.out.println(e.getMessage());
                             }
-
                         }
                         repository.save(nuevoLibro);
                     }
