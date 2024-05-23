@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "libros")
 public class Libro {
-    @Id //aviso que el atributo que está abajo será la primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //para que sea autoincremental
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -18,7 +18,7 @@ public class Libro {
 
     private String titulo;
 
-    @ManyToMany(mappedBy = "listaLibros", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER) //listaLibros es el atributo en Autor
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER) //cascade = CascadeType.PERSIST,
     private List<Autor> listaAutores;
 
     private List<String> listaIdiomas;
@@ -30,7 +30,7 @@ public class Libro {
     {
         this.isbn = datoLibro.isbn();
         this.titulo = datoLibro.titulo();
-        this.listaAutores = new ArrayList<>(); //la voy poblando luego - sin datos desde datoLibro
+        this.listaAutores = new ArrayList<>();
         this.listaIdiomas = datoLibro.listaIdiomas();
         this.cantidadDescargas = datoLibro.cantidadDescargas();
     }
@@ -78,7 +78,7 @@ public class Libro {
                 .collect(Collectors.toList());
         return "\nLibro" +
                 "\nISBN: " + isbn +
-                "\nTítulo: " + titulo + '\'' +
+                "\nTítulo: " + titulo +
                 "\nAutor(es): " + listaAutoresString +
                 "\nIdioma(s): " + listaIdiomas +
                 "\nTotal Descargas: " + cantidadDescargas;
