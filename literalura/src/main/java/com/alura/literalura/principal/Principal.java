@@ -47,18 +47,16 @@ public class Principal {
                     buscarLibroPorTitulo();
                     break;
                 case 2:
-                    libroRepository.findAll().stream().sorted(Comparator.comparing(Libro::getTitulo))
-                            .forEach(System.out::println); //TODO: query especifica juntando tablas?
+                    listarLibrosRegistrados();
                     break;
                 case 3:
-                    autorRepository.findAll().stream().sorted(Comparator.comparing(Autor::getApellidoNombre))
-                            .forEach(System.out::println); //TODO: query especifica juntando tablas?
+                    listarAutoresRegistrados();
                     break;
                 case 4:
                     listarAutoresVivosEnFecha();
                     break;
                 case 5:
-                    //listarLibrosPorIdioma(String idioma);
+                    listarLibrosPorIdioma();
                     break;
                 case 0:
                     System.out.println("Cerrando la aplicación...");
@@ -67,7 +65,6 @@ public class Principal {
                     System.out.println("Opción inválida");
             }
         }
-
     }
 
     public void buscarLibroPorTitulo()
@@ -132,6 +129,30 @@ public class Principal {
         }
     }
 
+    public void listarLibrosRegistrados()
+    {
+        List<Libro> librosRegistrados = libroRepository.findAll();
+        if (librosRegistrados.isEmpty())
+        {
+            System.out.println("No existen aún registros en la base de datos");
+            return;
+        }
+        librosRegistrados.stream().sorted(Comparator.comparing(Libro::getTitulo))
+                .forEach(System.out::println); //TODO: crear un DTO especifico?
+    }
+
+    public void listarAutoresRegistrados()
+    {
+        List<Autor> autoresRegistrados = autorRepository.findAll();
+        if(autoresRegistrados.isEmpty())
+        {
+            System.out.println("No hay aún autores registrados en la base de datos");
+            return;
+        }
+        autoresRegistrados.stream().sorted(Comparator.comparing(Autor::getApellidoNombre))
+                .forEach(System.out::println);
+    }
+
     public void listarAutoresVivosEnFecha()
     {
         System.out.println("\nIngrese el año para saber que autores estaban vivos en esa fecha");
@@ -150,6 +171,57 @@ public class Principal {
         catch (NumberFormatException e)
         {
             System.out.println("Dato ingresado no es un número entero. Inténtelo de nuevo");
+        }
+    }
+
+    public void listarLibrosPorIdioma()
+    {
+        System.out.println("\nIngrese el idioma");
+        var opcion = -1;
+        var idioma ="";
+        while (opcion != 0) {
+            var menu = """
+                    
+                    1 - ES (Castellano)
+                    2 - PT (Portugués)
+                    3 - EN (Inglés)
+                    4 - FR (Francés)
+                                  
+                    0 - Volver
+                    """;
+            System.out.println(menu);
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcion) {
+                case 1:
+                    idioma = "ES";
+                    libroRepository.findPorIdiomaES();
+                    break;
+                case 2:
+                    idioma = "PT";
+                    break;
+                case 3:
+                    idioma = "EN";
+                    break;
+                case 4:
+                    idioma = "FR";
+                    break;
+                case 0:
+                    System.out.println("Volviendo...");
+                    return;
+                default:
+                    System.out.println("Opción inválida");
+                    return;
+            }
+//            List<Libro> librosPorIdioma = libroRepository.findPorIdioma(idioma);
+//            if (librosPorIdioma.isEmpty())
+//            {
+//                System.out.println("No existen registros para el idioma " + idioma);
+//                return;
+//            }
+//            librosPorIdioma.stream().sorted(Comparator.comparing(Libro::getTitulo))
+//                    .forEach(System.out::println); //TODO: crear un DTO especifico?
         }
     }
 }
