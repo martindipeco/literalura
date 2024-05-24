@@ -19,7 +19,7 @@ public class Autor {
     private Integer fechaNac;
     private Integer fechaMuerte;
 
-    @ManyToMany(mappedBy = "listaAutores", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)  //(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Libro> listaLibros;
 
     public Autor(){}
@@ -83,5 +83,10 @@ public class Autor {
         return "\nAutor: " + apellidoNombre +
                 "\nNacimiento: " + fechaNac +
                 "\nMuerte: " + fechaMuerte;
+    }
+
+    public String toStringParaLibro()
+    {
+        return apellidoNombre;
     }
 }

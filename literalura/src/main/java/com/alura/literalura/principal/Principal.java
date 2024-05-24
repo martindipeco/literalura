@@ -72,7 +72,6 @@ public class Principal {
             System.out.println("No existen datos con esa búsqueda. Intentelo de nuevo");
             return;
         }
-
         for (DatoLibro dl : listaDeDatoLibro) {
             Libro nuevoLibro;
             Optional<Libro> libroExistente = libroRepository.findByIsbn(dl.isbn());
@@ -83,6 +82,7 @@ public class Principal {
                 nuevoLibro = new Libro(dl);
             }
             for (DatoAutor da : dl.listaAutores()) {
+                //TODO: manejar el caso de libros con más de un autor
                 Autor nuevoAutor;
                 try {
                     Optional<Autor> autorExistente = autorRepository
@@ -91,25 +91,22 @@ public class Principal {
                                     , Integer.valueOf(da.fechaMuerte())
                             );
                     if (autorExistente.isPresent()) {
-                        //TODO: manejar el caso de autores repetidos!!
+
                         System.out.println("Ese autor ya existe en la base de datos\n");
                         nuevoAutor = autorExistente.get();
-                        //nuevoLibro.addAutor(nuevoAutor);
-                        //nuevoAutor.getListaLibros().add(nuevoLibro); //linea anterior ya hace esta accion
-                        //se rompe si intento persistir con nuevoAutor.addLibro(nuevoLibro);
-                        //Ver como maneja inserciones ScreenMatch
                     } else {
                         nuevoAutor = new Autor(da);
                     }
                     nuevoAutor.getListaLibros().add(nuevoLibro);
                     nuevoLibro.getListaAutores().add(nuevoAutor);
+                    autorRepository.save(nuevoAutor);
                 } catch (NumberFormatException e) {
                     System.out.println("Error de dato numérico en Fechas");
                     System.out.println("No se pudo guardar autor");
                     System.out.println(e.getMessage());
                 }
             }
-            libroRepository.save(nuevoLibro);
+            //libroRepository.save(nuevoLibro);
         }
     }
 

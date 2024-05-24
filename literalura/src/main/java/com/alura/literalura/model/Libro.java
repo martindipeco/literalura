@@ -18,7 +18,7 @@ public class Libro {
 
     private String titulo;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER) //cascade = CascadeType.PERSIST,
+    @ManyToMany(mappedBy = "listaLibros", fetch = FetchType.EAGER) //cascade = CascadeType.PERSIST,
     private List<Autor> listaAutores;
 
     private List<String> listaIdiomas;
@@ -73,9 +73,9 @@ public class Libro {
 
     @Override
     public String toString() {
-        List<String> listaAutoresString = listaAutores.stream()
-                .map(la -> la.toString())
-                .collect(Collectors.toList());
+        String listaAutoresString = listaAutores.stream()
+                .map(Autor::toStringParaLibro)
+                .collect(Collectors.joining(", "));
         return "\nLibro" +
                 "\nISBN: " + isbn +
                 "\nTítulo: " + titulo +
