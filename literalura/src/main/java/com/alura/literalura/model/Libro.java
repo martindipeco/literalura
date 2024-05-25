@@ -68,7 +68,7 @@ public class Libro {
     public void addAutor(Autor autor)
     {
         listaAutores.forEach(a -> a.addLibro(this));
-        this.listaAutores.add(autor);
+        //this.listaAutores.add(autor);
     }
 
     @Override

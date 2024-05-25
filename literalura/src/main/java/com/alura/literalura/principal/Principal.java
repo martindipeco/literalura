@@ -36,8 +36,15 @@ public class Principal {
                     0 - Salir
                     """;
             System.out.println(menu);
-            opcion = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                opcion = scanner.nextInt();
+                scanner.nextLine();
+            }
+            catch (InputMismatchException e)
+            {
+                opcion = -1;
+                scanner.nextLine();
+            }
 
             switch (opcion) {
                 case 1:
@@ -106,7 +113,6 @@ public class Principal {
                     System.out.println(e.getMessage());
                 }
             }
-            //libroRepository.save(nuevoLibro);
         }
     }
 

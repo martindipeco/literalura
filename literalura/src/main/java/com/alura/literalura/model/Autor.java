@@ -9,17 +9,19 @@ import java.util.List;
 @Table(name = "autores")
 public class Autor {
 
-    @Id //aviso que el atributo que está abajo será la primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //para que sea autoincremental
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // antes tenia @Column(unique = true), pero puede darse el caso de distintos autores con el mismo nombre! Lamentablemente gutendex no tiene "id" de autor. Habrá que hacer la comparación full de nacimiento y muerte
     private String apellidoNombre;
 
     private Integer fechaNac;
     private Integer fechaMuerte;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable (name = "libro_autor",
+            joinColumns = @JoinColumn(name = "autor_id"),
+            inverseJoinColumns = @JoinColumn(name = "libro_id"))
     private List<Libro> listaLibros;
 
     public Autor(){}
@@ -33,7 +35,6 @@ public class Autor {
         catch (NumberFormatException e)
         {
             System.out.println("Sin datos para fecha de nacimiento");
-            //¿que dato deberíamos asignar?
             this.fechaNac = null;
         }
         try {
@@ -44,7 +45,7 @@ public class Autor {
             System.out.println("Sin datos para fecha de fallecimiento");
             this.fechaMuerte = null;
         }
-        this.listaLibros = new ArrayList<>(); //solo inicializo, la lleno más adelante
+        this.listaLibros = new ArrayList<>();
     }
 
     public Long getId() {
