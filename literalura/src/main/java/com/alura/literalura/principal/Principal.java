@@ -7,6 +7,7 @@ import com.alura.literalura.service.LibroService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
 
@@ -32,6 +33,7 @@ public class Principal {
                     3 - Listar autores registrados
                     4 - Listar autores vivos en un determinado año
                     5 - Listar libros por idioma
+                    6 - Estadísticas (API)
                                   
                     0 - Salir
                     """;
@@ -62,6 +64,9 @@ public class Principal {
                 case 5:
                     listarLibrosPorIdioma();
                     break;
+                case 6:
+                    mostrarEstadisticasAPI();
+                    break;
                 case 0:
                     System.out.println("Cerrando la aplicación...");
                     break;
@@ -71,7 +76,7 @@ public class Principal {
         }
     }
 
-    public void buscarLibroPorTitulo() {
+    private void buscarLibroPorTitulo() {
         System.out.println("\nIngrese su búsqueda");
         var busqueda = scanner.nextLine();
         var listaDeDatoLibro = libroServicio.buscarLibroPorTitulo(busqueda);
@@ -116,7 +121,7 @@ public class Principal {
         }
     }
 
-    public void listarLibrosRegistrados() {
+    private void listarLibrosRegistrados() {
         List<Libro> librosRegistrados = libroRepository.findAll();
         if (librosRegistrados.isEmpty()) {
             System.out.println("No existen aún registros en la base de datos");
@@ -126,7 +131,7 @@ public class Principal {
                 .forEach(System.out::println); //TODO: crear un DTO especifico?
     }
 
-    public void listarAutoresRegistrados() {
+    private void listarAutoresRegistrados() {
         List<Autor> autoresRegistrados = autorRepository.findAll();
         if (autoresRegistrados.isEmpty()) {
             System.out.println("No hay aún autores registrados en la base de datos");
@@ -136,7 +141,7 @@ public class Principal {
                 .forEach(System.out::println);
     }
 
-    public void listarAutoresVivosEnFecha() {
+    private void listarAutoresVivosEnFecha() {
         System.out.println("\nIngrese el año para saber que autores estaban vivos en esa fecha");
         var busqueda = scanner.nextLine();
         try {
@@ -153,7 +158,7 @@ public class Principal {
         }
     }
 
-    public void listarLibrosPorIdioma() {
+    private void listarLibrosPorIdioma() {
         System.out.println("\nIngrese el idioma");
         var opcion = -1;
         while (opcion != 0) {
@@ -200,5 +205,22 @@ public class Principal {
                     .forEach(System.out::println); //TODO: crear un DTO especifico?
 
         }
+    }
+
+    private void mostrarEstadisticasAPI()
+    {
+        var datos = libroServicio.traerTodaLaBase();
+        var libros = datos.stream().map(Libro::new).collect(Collectors.toList());
+
+        LongSummaryStatistics est = libros.stream()
+                .filter(d -> d.getCantidadDescargas()>0)
+                .collect(Collectors.summarizingLong(Libro::getCantidadDescargas));
+
+        System.out.println("En base a 32 casos más populares");
+
+        System.out.println("Promedio de descargas: " + est.getAverage());
+        System.out.println("Cantidad de casos: " + est.getCount());
+        System.out.println("Mínima de descargas: " + est.getMin());
+        System.out.println("Máxima de descargas: " + est.getMax());
     }
 }

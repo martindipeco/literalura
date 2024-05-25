@@ -18,6 +18,7 @@ public class LibroService {
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
 
+    //TODO: refactorizar (ver "convierte Datos en SerieService de ScreenMAtch)
     public List<DatoLibro> buscarLibroPorTitulo(String busqueda)
     {
         String direccion = URL_BASE + busqueda.replace(" ", "%20");
@@ -40,6 +41,14 @@ public class LibroService {
                     .collect(Collectors.toList());
         }
         return autores;
+    }
+
+    public List<DatoLibro> traerTodaLaBase()
+    {
+        String direccion = URL_BASE_ID;
+        var json = consumoAPI.obtenerDatos(direccion);
+        var datos = conversor.obtenerDatos(json, Dato.class);
+        return datos.listaDeLibros();
     }
 
 }
