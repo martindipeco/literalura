@@ -29,11 +29,14 @@ public class Principal {
             var menu = """
                                         
                     1 - Buscar libro por título y/o autor (y agregar a base propia)
-                    2 - Listar libros registrados
-                    3 - Listar autores registrados
-                    4 - Listar autores vivos en un determinado año
-                    5 - Listar libros por idioma
-                    6 - Estadísticas (API)
+                    2 - Buscar por nombre Autor en Repo
+                    3 - Listar libros registrados
+                    4 - Listar autores registrados
+                    5 - Listar autores vivos en un determinado año
+                    6 - Listar libros por idioma
+                    7 - Estadísticas (API)
+                    8 - Estadísticas (Repo)
+                    9 - Datos curiosos con años
                                   
                     0 - Salir
                     """;
@@ -53,19 +56,28 @@ public class Principal {
                     buscarLibroPorTitulo();
                     break;
                 case 2:
-                    listarLibrosRegistrados();
+                    buscarAutorPorNombre();
                     break;
                 case 3:
-                    listarAutoresRegistrados();
+                    listarLibrosRegistrados();
                     break;
                 case 4:
-                    listarAutoresVivosEnFecha();
+                    listarAutoresRegistrados();
                     break;
                 case 5:
-                    listarLibrosPorIdioma();
+                    listarAutoresVivosEnFecha();
                     break;
                 case 6:
+                    listarLibrosPorIdioma();
+                    break;
+                case 7:
                     mostrarEstadisticasAPI();
+                    break;
+                case 8:
+                    mostrarEstadisticasRepo();
+                    break;
+                case 9:
+                    mostrarDatosCuriosos();
                     break;
                 case 0:
                     System.out.println("Cerrando la aplicación...");
@@ -121,6 +133,21 @@ public class Principal {
         }
     }
 
+    private void buscarAutorPorNombre()
+    {
+        System.out.println("\nIngrese su búsqueda");
+        var busqueda = scanner.nextLine();
+        var autorBuscado = autorRepository.findByApellidoNombreContainsIgnoreCase(busqueda);
+        if(autorBuscado.isPresent())
+        {
+            System.out.println("Se encontró a " + autorBuscado.get());
+        }
+        else
+        {
+            System.out.println("No se encontró ninguna serie con ese nombre");
+        }
+
+    }
     private void listarLibrosRegistrados() {
         List<Libro> librosRegistrados = libroRepository.findAll();
         if (librosRegistrados.isEmpty()) {
@@ -209,18 +236,53 @@ public class Principal {
 
     private void mostrarEstadisticasAPI()
     {
+        System.out.println("En base a 32 casos más populares de la API");
         var datos = libroServicio.traerTodaLaBase();
         var libros = datos.stream().map(Libro::new).collect(Collectors.toList());
+        mostrarEstadisticas(libros);
+    }
 
+    private void mostrarEstadisticasRepo()
+    {
+        System.out.println("En base al total de casos de la base propia");
+        var libros = libroRepository.findAll();
+        mostrarEstadisticas(libros);
+    }
+
+    private void mostrarEstadisticas(List<Libro> libros)
+    {
         LongSummaryStatistics est = libros.stream()
                 .filter(d -> d.getCantidadDescargas()>0)
                 .collect(Collectors.summarizingLong(Libro::getCantidadDescargas));
-
-        System.out.println("En base a 32 casos más populares");
 
         System.out.println("Promedio de descargas: " + est.getAverage());
         System.out.println("Cantidad de casos: " + est.getCount());
         System.out.println("Mínima de descargas: " + est.getMin());
         System.out.println("Máxima de descargas: " + est.getMax());
+
+        System.out.println("Top 10 más descargados: ");
+        for (int i= 0; i<10; i++)
+        {
+            System.out.println("\n");
+            System.out.println("Pesto nº "+(i+1));
+            System.out.println(libros.get(i));
+        }
+    }
+
+    private void mostrarDatosCuriosos()
+    {
+        Optional<Autor> elMasLongevo = autorRepository.autorMasLongevo();
+        if(elMasLongevo.isPresent())
+        {
+            Autor masLongevoPresente = elMasLongevo.get();
+            System.out.println("El autor más longevo de acuerdo con la base fue: ");
+            System.out.println(masLongevoPresente);
+            System.out.println("Vivió " + (masLongevoPresente.getFechaMuerte() - masLongevoPresente.getFechaNac())
+                    + " años");
+        }
+        else
+        {
+            System.out.println("No se encontraron datos de longevidad");
+        }
     }
 }
