@@ -19,7 +19,7 @@ public class Autor {
     private Integer fechaMuerte;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinTable (name = "libro_autor",
+    @JoinTable (name = "autores_libros",
             joinColumns = @JoinColumn(name = "autor_id"),
             inverseJoinColumns = @JoinColumn(name = "libro_id"))
     private List<Libro> listaLibros;

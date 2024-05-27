@@ -4,7 +4,8 @@ import com.alura.literalura.model.*;
 import com.alura.literalura.repository.IAutorRepository;
 import com.alura.literalura.repository.ILibroRepository;
 import com.alura.literalura.service.LibroService;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,6 +89,7 @@ public class Principal {
         }
     }
 
+    @Transactional
     private void buscarLibroPorTitulo() {
         System.out.println("\nIngrese su búsqueda");
         var busqueda = scanner.nextLine();
@@ -105,6 +107,12 @@ public class Principal {
             } else {
                 nuevoLibro = new Libro(dl);
             }
+            if(nuevoLibro.getListaAutores().size()>1)
+            {
+                var listaDeCoAutores = nuevoLibro.getListaAutores()
+                        .stream().map(Autor::toStringParaLibro).collect(Collectors.joining("- "));
+                nuevoLibro.setCoAutores(listaDeCoAutores);
+            }
             for (DatoAutor da : dl.listaAutores()) {
                 //TODO: manejar el caso de libros con más de un autor
                 Autor nuevoAutor;
@@ -115,15 +123,22 @@ public class Principal {
                                     , Integer.valueOf(da.fechaMuerte())
                             );
                     if (autorExistente.isPresent()) {
-
-                        System.out.println("Ese autor ya existe en la base de datos\n");
                         nuevoAutor = autorExistente.get();
                     } else {
                         nuevoAutor = new Autor(da);
                     }
                     nuevoAutor.getListaLibros().add(nuevoLibro);
                     nuevoLibro.getListaAutores().add(nuevoAutor);
-                    autorRepository.save(nuevoAutor);
+                    try
+                    {
+                        autorRepository.save(nuevoAutor);
+                    }
+                    catch (InvalidDataAccessApiUsageException e)
+                    {
+                        System.out.println("Error al tratar de incluir segundo autor");
+                        System.out.println(e.getMessage());
+                    }
+
                 } catch (NumberFormatException e) {
                     System.out.println("Error de dato numérico en Fechas");
                     System.out.println("No se pudo guardar autor");

@@ -21,6 +21,8 @@ public class Libro {
     @ManyToMany(mappedBy = "listaLibros", fetch = FetchType.EAGER) //cascade = CascadeType.PERSIST,
     private List<Autor> listaAutores;
 
+    private String coAutores;
+
     private List<String> listaIdiomas;
     private Long cantidadDescargas;
 
@@ -49,6 +51,13 @@ public class Libro {
 
     public List<Autor> getListaAutores() {
         return listaAutores;
+    }
+
+    public String getCoAutores() {return coAutores;}
+
+    public void setCoAutores(String coAutores)
+    {
+        this.coAutores = coAutores;
     }
 
     public List<String> getListaIdiomas() {

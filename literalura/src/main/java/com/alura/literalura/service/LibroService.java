@@ -50,5 +50,4 @@ public class LibroService {
         var datos = conversor.obtenerDatos(json, Dato.class);
         return datos.listaDeLibros();
     }
-
 }
