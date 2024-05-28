@@ -5,7 +5,6 @@ import com.alura.literalura.repository.IAutorRepository;
 import com.alura.literalura.repository.ILibroRepository;
 import com.alura.literalura.service.LibroService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,7 +88,6 @@ public class Principal {
         }
     }
 
-    @Transactional
     private void buscarLibroPorTitulo() {
         System.out.println("\nIngrese su búsqueda");
         var busqueda = scanner.nextLine();
