@@ -101,41 +101,54 @@ public class Principal {
             Optional<Libro> libroExistente = libroRepository.findByIsbn(dl.isbn());
             if (libroExistente.isPresent()) {
                 System.out.println("Ese libro ya existe en la base de datos");
-                continue;
+                continue; //proximo: agregar funcionalidad para corregir datos de un libro existente
             } else {
                 nuevoLibro = new Libro(dl);
             }
-            if(dl.listaAutores().size()>1)
+            if(dl.listaAutores().size()>1) //para manejar caso de many autores persisto con libro
             {
-                var listaDeCoAutores = dl.listaAutores()
-                        .stream().map(DatoAutor::apellidoNombre).collect(Collectors.joining("- "));
-                nuevoLibro.setCoAutores(listaDeCoAutores);
+                for (DatoAutor da : dl.listaAutores()) {
+                    Autor nuevoAutor;
+                    try {
+                        Optional<Autor> autorExistente = autorRepository
+                                .findByApellidoNombreAndFechaNacAndFechaMuerte(
+                                        da.apellidoNombre(), Integer.valueOf(da.fechaNac())
+                                        , Integer.valueOf(da.fechaMuerte())
+                                );
+                        if (autorExistente.isPresent()) {
+                            nuevoAutor = autorExistente.get();
+                        } else {
+                            nuevoAutor = new Autor(da);
+                        }
+                        nuevoAutor.getListaLibros().add(nuevoLibro);
+                        nuevoLibro.getListaAutores().add(nuevoAutor);
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error de dato numérico en Fechas");
+                        System.out.println("No se pudo guardar autor");
+                        System.out.println(e.getMessage());
+                    }
+                }
+                libroRepository.save(nuevoLibro);
             }
-            for (DatoAutor da : dl.listaAutores()) {
-                //TODO: manejar el caso de libros con más de un autor
+            else if (dl.listaAutores().size()==1)//tengo el caso de un único autor. persisto por autor
+            {
+                var datoAutorUnico = dl.listaAutores().get(0);
                 Autor nuevoAutor;
                 try {
                     Optional<Autor> autorExistente = autorRepository
                             .findByApellidoNombreAndFechaNacAndFechaMuerte(
-                                    da.apellidoNombre(), Integer.valueOf(da.fechaNac())
-                                    , Integer.valueOf(da.fechaMuerte())
+                                    datoAutorUnico.apellidoNombre(), Integer.valueOf(datoAutorUnico.fechaNac())
+                                    , Integer.valueOf(datoAutorUnico.fechaMuerte())
                             );
                     if (autorExistente.isPresent()) {
                         nuevoAutor = autorExistente.get();
                     } else {
-                        nuevoAutor = new Autor(da);
+                        nuevoAutor = new Autor(datoAutorUnico);
                     }
                     nuevoAutor.getListaLibros().add(nuevoLibro);
                     nuevoLibro.getListaAutores().add(nuevoAutor);
-                    try
-                    {
-                        autorRepository.save(nuevoAutor);
-                    }
-                    catch (InvalidDataAccessApiUsageException e)
-                    {
-                        System.out.println("Error al tratar de incluir segundo autor");
-                        System.out.println(e.getMessage());
-                    }
+                    autorRepository.save(nuevoAutor);
 
                 } catch (NumberFormatException e) {
                     System.out.println("Error de dato numérico en Fechas");
@@ -157,7 +170,7 @@ public class Principal {
         }
         else
         {
-            System.out.println("No se encontró ninguna serie con ese nombre");
+            System.out.println("No se encontró ningún autor con ese nombre");
         }
 
     }
@@ -168,7 +181,7 @@ public class Principal {
             return;
         }
         librosRegistrados.stream().sorted(Comparator.comparing(Libro::getTitulo))
-                .forEach(System.out::println); //TODO: crear un DTO especifico?
+                .forEach(System.out::println);
     }
 
     private void listarAutoresRegistrados() {
@@ -242,8 +255,7 @@ public class Principal {
                 return;
             }
             librosPorIdioma.stream().sorted(Comparator.comparing(Libro::getTitulo))
-                    .forEach(System.out::println); //TODO: crear un DTO especifico?
-
+                    .forEach(System.out::println);
         }
     }
 
@@ -272,9 +284,14 @@ public class Principal {
         System.out.println("Cantidad de casos: " + est.getCount());
         System.out.println("Mínima de descargas: " + est.getMin());
         System.out.println("Máxima de descargas: " + est.getMax());
+        int top = 10;
+        if (libros.size()<top)
+        {
+            top = libros.size();
+        }
+        System.out.println("Top " + top + " más descargados: ");
 
-        System.out.println("Top 10 más descargados: ");
-        for (int i= 0; i<10; i++)
+        for (int i= 0; i<top; i++)
         {
             System.out.println("\n");
             System.out.println("Pesto nº "+(i+1));

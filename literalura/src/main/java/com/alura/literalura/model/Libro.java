@@ -18,10 +18,8 @@ public class Libro {
 
     private String titulo;
 
-    @ManyToMany(mappedBy = "listaLibros", fetch = FetchType.EAGER) //cascade = CascadeType.PERSIST,
+    @ManyToMany(mappedBy = "listaLibros", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Autor> listaAutores;
-
-    private String coAutores;
 
     private List<String> listaIdiomas;
     private Long cantidadDescargas;
@@ -51,13 +49,6 @@ public class Libro {
 
     public List<Autor> getListaAutores() {
         return listaAutores;
-    }
-
-    public String getCoAutores() {return coAutores;}
-
-    public void setCoAutores(String coAutores)
-    {
-        this.coAutores = coAutores;
     }
 
     public List<String> getListaIdiomas() {
