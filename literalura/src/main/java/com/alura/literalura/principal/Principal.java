@@ -105,10 +105,10 @@ public class Principal {
             } else {
                 nuevoLibro = new Libro(dl);
             }
-            if(nuevoLibro.getListaAutores().size()>1)
+            if(dl.listaAutores().size()>1)
             {
-                var listaDeCoAutores = nuevoLibro.getListaAutores()
-                        .stream().map(Autor::toStringParaLibro).collect(Collectors.joining("- "));
+                var listaDeCoAutores = dl.listaAutores()
+                        .stream().map(DatoAutor::apellidoNombre).collect(Collectors.joining("- "));
                 nuevoLibro.setCoAutores(listaDeCoAutores);
             }
             for (DatoAutor da : dl.listaAutores()) {
