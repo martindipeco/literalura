@@ -131,7 +131,7 @@ public class Principal {
                 }
                 libroRepository.save(nuevoLibro);
             }
-            else if (dl.listaAutores().size()==1)//tengo el caso de un único autor. persisto por autor
+            else if (dl.listaAutores().size()==1)//para manejar posible caso de many libros de 1 auotr persisto por autor
             {
                 var datoAutorUnico = dl.listaAutores().get(0);
                 Autor nuevoAutor;
@@ -164,13 +164,17 @@ public class Principal {
         System.out.println("\nIngrese su búsqueda");
         var busqueda = scanner.nextLine();
         var autorBuscado = autorRepository.findByApellidoNombreContainsIgnoreCase(busqueda);
-        if(autorBuscado.isPresent())
+        if(autorBuscado.isEmpty())
         {
-            System.out.println("Se encontró a " + autorBuscado.get());
+            System.out.println("No se encontró ningún autor con ese nombre");
         }
         else
         {
-            System.out.println("No se encontró ningún autor con ese nombre");
+            System.out.println("Encontrado: ");
+            for(Autor autor : autorBuscado)
+            {
+                System.out.println(autor);
+            }
         }
 
     }
@@ -271,6 +275,7 @@ public class Principal {
     {
         System.out.println("En base al total de casos de la base propia");
         var libros = libroRepository.findAll();
+        libros.sort(Comparator.comparingLong(Libro::getCantidadDescargas).reversed());
         mostrarEstadisticas(libros);
     }
 

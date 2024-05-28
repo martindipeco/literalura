@@ -13,7 +13,7 @@ public interface IAutorRepository extends JpaRepository<Autor, Long> {
     Optional<Autor> findByApellidoNombreAndFechaNacAndFechaMuerte
             (String apellidoNombre, Integer fechaNac, Integer fechaMuerte);
 
-    Optional<Autor> findByApellidoNombreContainsIgnoreCase (String apellidoNombre);
+    List<Autor> findByApellidoNombreContainsIgnoreCase(String apellidoNombre);
 
     //anotacion JPQL
     @Query(value = "SELECT a FROM Autor a WHERE a.fechaNac <= :anio AND a.fechaMuerte >= :anio")
