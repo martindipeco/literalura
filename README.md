@@ -4,6 +4,8 @@
 
 Liter-Alura es una aplicación Java que permite gestionar libros y autores utilizando JPA (Java Persistence API) con Hibernate y una base de datos PostgreSQL. La aplicación ofrece diversas funcionalidades para buscar y listar libros y autores, así como obtener estadísticas y datos curiosos.
 
+[Link a video - demo (13 min)](https://youtu.be/S_Wtcx2KEOc)
+
 ## Funcionalidades
 
 1. **Buscar libro por título y/o autor (y agregar a base propia)**
@@ -132,6 +134,3 @@ git commit -m 'Agregar nueva funcionalidad'
 git push origin feature/nueva-funcionalidad
 ```
 5. Abre un Pull Request.
-
-
-[Link a video - demo (13 min)](https://youtu.be/S_Wtcx2KEOc)
