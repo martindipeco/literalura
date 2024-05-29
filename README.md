@@ -39,6 +39,7 @@ El proyecto está estructurado de la siguiente manera:
 ```bash
 git clone <url_del_repositorio>
 cd liter-alura
+```
 
 2. **Configurar la base de datos:**
 
@@ -46,6 +47,7 @@ Asegúrate de tener PostgreSQL instalado y ejecutándose. Crea una base de datos
 
 ```bash
 CREATE DATABASE liter_alura;
+```
 
 3. **Configurar las propiedades de la aplicación:**
 
@@ -56,13 +58,14 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/liter_alura
 spring.datasource.username=tu_usuario
 spring.datasource.password=tu_contraseña
 spring.jpa.hibernate.ddl-auto=update
+```
 
 4. **Construir y ejecutar la aplicación:**
 
 ```bash
 mvn clean install
 mvn spring-boot:run
-
+```
 
 ## Uso
 
@@ -82,6 +85,7 @@ Bienvenidos a Liter-Alura
 9 - Datos curiosos con años
 
 0 - Salir
+```
 
 ### Ejemplos de uso
 
@@ -118,12 +122,15 @@ Las contribuciones son bienvenidas. Por favor, sigue los siguientes pasos:
 2. Crea una nueva rama:
 ```bash
  git checkout -b feature/nueva-funcionalidad:
+```
 3. Realiza los cambios necesarios y realiza commits:
 ```bash
 git commit -m 'Agregar nueva funcionalidad'
+```
 4. Empuja los cambios a tu fork:
 ```bash
 git push origin feature/nueva-funcionalidad
+```
 5. Abre un Pull Request.
 
 
